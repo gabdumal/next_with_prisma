@@ -1,52 +1,28 @@
 "use client";
 
-import User from "@/types/User";
+import { create as createUser } from "@/server/User";
+import { useActionState, useEffect } from "react";
 
 interface CreateUserProps {}
 
 export default function CreateUser({}: CreateUserProps) {
   const inputClasses = "p-2 border border-gray-300 rounded-md";
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
+  const [state, formAction, isPending] = useActionState(createUser, {
+    name: "",
+    email: "",
+  });
 
-    const validate = (data: { [k: string]: FormDataEntryValue }): User => {
-      if (!data.name || !data.email) {
-        throw new Error("Name and Email are required");
-      }
-
-      const validatedName = data.name.toString().trim();
-      if (validatedName.length < 3) {
-        throw new Error("Name must be at least 3 characters long");
-      }
-
-      const validatedEmail = data.email.toString().trim();
-      if (validatedEmail.length < 3) {
-        throw new Error("Email must be at least 3 characters long");
-      }
-      if (!validatedEmail.includes("@")) {
-        throw new Error("Email must contain @");
-      }
-
-      return {
-        name: validatedName,
-        email: validatedEmail,
-      };
-    };
-
-    const user = validate(data);
-    console.log(user);
-  };
+  useEffect(() => {
+    console.log(state);
+  }, [state]);
 
   return (
     <section className="flex flex-col justify-center gap-4">
       <h1 className="text-2xl">Create User</h1>
       <form
         className="flex flex-col justify-center gap-3 text-lg min-w-96"
-        onSubmit={handleSubmit}
+        action={formAction}
       >
         <div className="flex flex-col justify-center gap-2">
           <input

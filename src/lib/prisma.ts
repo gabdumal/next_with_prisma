@@ -4,4 +4,4 @@ const prisma = new PrismaClient().$extends({
   model: {},
 });
 
-export default { prisma };
+export { prisma };
